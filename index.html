@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>BookShelf Pro</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BookShelf">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Головна сторінка -->
+        <div id="homePage" class="page active">
+            <div class="container">
+                <h1 class="main-title">📚 BookShelf Pro</h1>
+                <button class="big-btn" onclick="app.showLibrary()">Моя бібліотека</button>
+                <button class="big-btn secondary" onclick="app.showSettings()">⚙ Налаштування</button>
+                <div class="version">v2.0</div>
+            </div>
+        </div>
+
+        <!-- Сторінка бібліотеки -->
+        <div id="libraryPage" class="page">
+            <div class="container">
+                <div class="header-with-search">
+                    <button class="icon-btn" onclick="app.showHome()">←</button>
+                    <h2>Моя бібліотека</h2>
+                    <button class="icon-btn" onclick="app.showAddBookDialog()">+</button>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="🔍 Пошук книги..." oninput="app.filterBooks()">
+                </div>
+                
+                <div class="stats-bar" id="statsBar">
+                    <span>📚 <span id="totalBooks">0</span></span>
+                    <span>✅ <span id="readBooks">0</span></span>
+                    <span>⭐ <span id="avgRating">0</span></span>
+                </div>
+                
+                <div id="booksList" class="books-list"></div>
+            </div>
+        </div>
+
+        <!-- Сторінка книги -->
+        <div id="bookPage" class="page">
+            <div class="container">
+                <button class="back-icon" onclick="app.showLibrary()">← Назад</button>
+                
+                <div class="book-detail-cover" id="bookDetailCover">📕</div>
+                <h2 id="bookDetailTitle"></h2>
+                <p id="bookDetailAuthor" class="detail-author"></p>
+                
+                <div class="rating-container">
+                    <div class="rating-stars" id="bookDetailRating"></div>
+                    <span class="rating-value" id="ratingValue">0/10</span>
+                </div>
+                
+                <div class="status-buttons">
+                    <button id="markReadBtn" class="status-btn read-btn" onclick="app.markRead()">✅ Прочитано</button>
+                    <button id="markUnreadBtn" class="status-btn unread-btn" onclick="app.markUnread()">📖 Не прочитано</button>
+                </div>
+                
+                <div class="review-section">
+                    <h3>📝 Рецензія</h3>
+                    <div id="bookDetailReview" class="review-text"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="app.editBook()">✏️ Редагувати</button>
+                    <button class="action-btn" onclick="app.changeCover()">🖼 Обкладинка</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сторінка налаштувань -->
+        <div id="settingsPage" class="page">
+            <div class="container">
+                <div class="header-with-search">
+                    <button class="icon-btn" onclick="app.showHome()">←</button>
+                    <h2>Налаштування</h2>
+                    <div style="width:40px"></div>
+                </div>
+                
+                <div class="settings-item">
+                    <label>🌙 Тема оформлення</label>
+                    <div class="theme-switch">
+                        <button class="theme-option" data-theme="dark" onclick="app.setTheme('dark')">🌙 Темна</button>
+                        <button class="theme-option" data-theme="light" onclick="app.setTheme('light')">☀️ Світла</button>
+                    </div>
+                </div>
+                
+                <div class="settings-item">
+                    <label>🌐 Мова</label>
+                    <div class="lang-switch">
+                        <button class="lang-option" data-lang="uk" onclick="app.setLanguage('uk')">🇺🇴 Українська</button>
+                        <button class="lang-option" data-lang="en" onclick="app.setLanguage('en')">🇬🇧 English</button>
+                    </div>
+                </div>
+                
+                <div class="settings-item">
+                    <label>💾 Дані</label>
+                    <button class="danger-btn" onclick="app.exportData()">📤 Експорт бібліотеки</button>
+                    <button class="danger-btn" onclick="app.importData()">📥 Імпорт бібліотеки</button>
+                    <button class="danger-btn danger" onclick="app.clearAllData()">🗑 Очистити всі дані</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Діалог додавання/редагування -->
+        <div id="bookDialog" class="dialog" style="display:none" onclick="if(event.target===this) app.closeDialog()">
+            <div class="dialog-content">
+                <h3 id="dialogTitle">Додати книгу</h3>
+                <input type="text" id="dialogTitleInput" placeholder="Назва книги *">
+                <input type="text" id="dialogAuthorInput" placeholder="Автор *">
+                <textarea id="dialogReviewInput" placeholder="Рецензія (необов'язково)"></textarea>
+                <div class="rating-input">
+                    <label>⭐ Рейтинг:</label>
+                    <div class="dialog-stars" id="dialogStars"></div>
+                    <input type="number" id="dialogRatingInput" min="0" max="10" step="1" value="5">
+                </div>
+                <div class="dialog-buttons">
+                    <button class="cancel-btn" onclick="app.closeDialog()">Скасувати</button>
+                    <button class="save-btn" onclick="app.saveBookDialog()">Зберегти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
