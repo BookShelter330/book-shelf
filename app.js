@@ -4,6 +4,7 @@ const app = {
     editBookId: null,
     language: 'uk',
     theme: 'dark',
+    sortBy: 'rating',
     
     translations: {
         uk: {
@@ -42,7 +43,11 @@ const app = {
             export_success: "✅ Бібліотеку експортовано!",
             import_success: "✅ Бібліотеку імпортовано!",
             import_error: "❌ Невірний формат файлу",
-            fill_fields: "Будь ласка, заповніть назву та автора!"
+            fill_fields: "Будь ласка, заповніть назву та автора!",
+            sort_by: "📊 Сортувати:",
+            sort_rating: "За рейтингом",
+            sort_title: "За назвою",
+            sort_date: "За датою"
         },
         en: {
             app_title: "BookShelf Pro",
@@ -80,7 +85,11 @@ const app = {
             export_success: "✅ Library exported!",
             import_success: "✅ Library imported!",
             import_error: "❌ Invalid file format",
-            fill_fields: "Please fill in title and author!"
+            fill_fields: "Please fill in title and author!",
+            sort_by: "📊 Sort by:",
+            sort_rating: "By rating",
+            sort_title: "By title",
+            sort_date: "By date"
         }
     },
     
@@ -109,12 +118,16 @@ const app = {
         
         const savedLang = localStorage.getItem('bookshelf_lang');
         if (savedLang) this.language = savedLang;
+        
+        const savedSort = localStorage.getItem('bookshelf_sort');
+        if (savedSort) this.sortBy = savedSort;
     },
     
     saveData() {
         localStorage.setItem('bookshelf_books', JSON.stringify(this.books));
         localStorage.setItem('bookshelf_theme', this.theme);
         localStorage.setItem('bookshelf_lang', this.language);
+        localStorage.setItem('bookshelf_sort', this.sortBy);
         this.updateStats();
     },
     
@@ -127,7 +140,8 @@ const app = {
                 review: "Геніальний роман про кохання, владу та вічні цінності.",
                 cover: "",
                 read: false,
-                rating: 9
+                rating: 9,
+                created: Date.now()
             },
             {
                 id: Date.now() + 1,
@@ -136,7 +150,8 @@ const app = {
                 review: "Класична антиутопія про цінність книг та свободи думки.",
                 cover: "",
                 read: true,
-                rating: 8
+                rating: 8,
+                created: Date.now() + 1
             }
         ];
     },
@@ -157,6 +172,11 @@ const app = {
         
         document.title = this.t('app_title');
         this.updateStats();
+        
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.value = this.sortBy;
+        }
     },
     
     updateStats() {
@@ -214,6 +234,19 @@ const app = {
         });
     },
     
+    setSort(sortBy) {
+        this.sortBy = sortBy;
+        this.saveData();
+        this.renderLibrary();
+    },
+    
+    getCoverImage(book) {
+        if (book.cover && book.cover.startsWith('data:')) {
+            return `<img src="${book.cover}" alt="Обкладинка">`;
+        }
+        return '📕';
+    },
+    
     renderLibrary() {
         const searchText = document.getElementById('searchInput')?.value.toLowerCase() || '';
         const container = document.getElementById('booksList');
@@ -228,7 +261,13 @@ const app = {
             );
         }
         
-        filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        if (this.sortBy === 'rating') {
+            filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        } else if (this.sortBy === 'title') {
+            filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
+        } else if (this.sortBy === 'date') {
+            filteredBooks.sort((a, b) => (b.created || 0) - (a.created || 0));
+        }
         
         if (filteredBooks.length === 0) {
             container.innerHTML = `<div class="empty-state">${this.t('no_books')}<br><small>${this.t('add_first')}</small></div>`;
@@ -237,7 +276,7 @@ const app = {
         
         container.innerHTML = filteredBooks.map(book => `
             <div class="book-card" onclick="app.openBook(${book.id})">
-                <div class="book-cover-mini">${book.cover ? '📖' : '📕'}</div>
+                <div class="book-cover-mini">${this.getCoverImage(book)}</div>
                 <div class="book-info">
                     <div class="book-title">${this.escapeHtml(book.title)}</div>
                     <div class="book-author">${this.escapeHtml(book.author)}</div>
@@ -261,19 +300,15 @@ const app = {
         
         const readBtn = document.getElementById('markReadBtn');
         const unreadBtn = document.getElementById('markUnreadBtn');
-        const editBtn = document.getElementById('editBookBtn');
-        const coverBtn = document.getElementById('changeCoverBtn');
         
         if (readBtn) readBtn.textContent = this.t('read');
         if (unreadBtn) unreadBtn.textContent = this.t('unread');
-        if (editBtn) editBtn.textContent = this.t('edit');
-        if (coverBtn) coverBtn.textContent = this.t('change_cover');
         
         this.renderStars(this.currentBook.rating || 0);
         
         const coverDiv = document.getElementById('bookDetailCover');
         if (this.currentBook.cover && this.currentBook.cover.startsWith('data:')) {
-            coverDiv.innerHTML = `<img src="${this.currentBook.cover}" style="max-width:180px;max-height:240px;border-radius:10px;">`;
+            coverDiv.innerHTML = `<img src="${this.currentBook.cover}" alt="Обкладинка">`;
         } else {
             coverDiv.innerHTML = '📕';
         }
@@ -389,7 +424,8 @@ const app = {
                 review: review,
                 cover: '',
                 read: false,
-                rating: Math.min(10, Math.max(0, rating))
+                rating: Math.min(10, Math.max(0, rating)),
+                created: Date.now()
             };
             this.books.push(newBook);
         } else {
@@ -444,88 +480,4 @@ const app = {
     },
     
     closeDialog() {
-        document.getElementById('bookDialog').style.display = 'none';
-    },
-    
-    setTheme(theme) {
-        this.theme = theme;
-        this.applyTheme();
-        this.saveData();
-        this.showSettings();
-    },
-    
-    applyTheme() {
-        if (this.theme === 'light') {
-            document.body.classList.add('light');
-            document.body.classList.remove('dark');
-        } else {
-            document.body.classList.add('dark');
-            document.body.classList.remove('light');
-        }
-    },
-    
-    setLanguage(lang) {
-        this.language = lang;
-        this.saveData();
-        this.updateAllTexts();
-        this.renderLibrary();
-        this.showSettings();
-        
-        if (this.currentBook) {
-            this.openBook(this.currentBook.id);
-        }
-    },
-    
-    exportData() {
-        const dataStr = JSON.stringify(this.books, null, 2);
-        const blob = new Blob([dataStr], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `bookshelf_backup_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert(this.t('export_success'));
-    },
-    
-    importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'application/json';
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const imported = JSON.parse(event.target.result);
-                    if (Array.isArray(imported)) {
-                        this.books = imported;
-                        this.saveData();
-                        this.renderLibrary();
-                        alert(this.t('import_success'));
-                    } else {
-                        alert(this.t('import_error'));
-                    }
-                } catch(e) {
-                    alert(this.t('import_error'));
-                }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    },
-    
-    clearAllData() {
-        if (confirm(this.t('clear_confirm'))) {
-            this.books = [];
-            this.saveData();
-            this.renderLibrary();
-            this.showLibrary();
-            alert('🗑 Всі дані очищено');
-        }
-    },
-    
-    escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, (m) => {
-            if (m === '&')
+        document.getElementById
