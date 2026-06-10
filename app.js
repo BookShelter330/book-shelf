@@ -480,4 +480,96 @@ const app = {
     },
     
     closeDialog() {
-        document.getElementById
+        document.getElementById('bookDialog').style.display = 'none';
+    },
+    
+    setTheme(theme) {
+        this.theme = theme;
+        this.applyTheme();
+        this.saveData();
+        this.showSettings();
+    },
+    
+    applyTheme() {
+        if (this.theme === 'light') {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        } else {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        }
+    },
+    
+    setLanguage(lang) {
+        this.language = lang;
+        this.saveData();
+        this.updateAllTexts();
+        this.renderLibrary();
+        this.showSettings();
+        
+        if (this.currentBook) {
+            this.openBook(this.currentBook.id);
+        }
+    },
+    
+    exportData() {
+        const dataStr = JSON.stringify(this.books, null, 2);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bookshelf_backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert(this.t('export_success'));
+    },
+    
+    importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    if (Array.isArray(imported)) {
+                        this.books = imported;
+                        this.saveData();
+                        this.renderLibrary();
+                        alert(this.t('import_success'));
+                    } else {
+                        alert(this.t('import_error'));
+                    }
+                } catch(e) {
+                    alert(this.t('import_error'));
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    },
+    
+    clearAllData() {
+        if (confirm(this.t('clear_confirm'))) {
+            this.books = [];
+            this.saveData();
+            this.renderLibrary();
+            this.showLibrary();
+            alert('🗑 Всі дані очищено');
+        }
+    },
+    
+    escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, (m) => {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+};
+
+app.init();
