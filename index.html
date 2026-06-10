@@ -33,6 +33,15 @@
                     <input type="text" id="searchInput" placeholder="🔍 Пошук книги..." oninput="app.filterBooks()">
                 </div>
                 
+                <div class="sort-container">
+                    <label>📊 Сортувати:</label>
+                    <select id="sortSelect" onchange="app.setSort(this.value)">
+                        <option value="rating">⭐ За рейтингом</option>
+                        <option value="title">📝 За назвою</option>
+                        <option value="date">📅 За датою</option>
+                    </select>
+                </div>
+                
                 <div class="stats-bar" id="statsBar">
                     <span>📚 <span id="totalBooks">0</span></span>
                     <span>✅ <span id="readBooks">0</span></span>
