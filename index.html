@@ -12,7 +12,6 @@
 </head>
 <body>
     <div id="app">
-        <!-- Головна сторінка -->
         <div id="homePage" class="page active">
             <div class="container">
                 <h1 class="main-title">📚 BookShelf Pro</h1>
@@ -22,7 +21,6 @@
             </div>
         </div>
 
-        <!-- Сторінка бібліотеки -->
         <div id="libraryPage" class="page">
             <div class="container">
                 <div class="header-with-search">
@@ -45,7 +43,6 @@
             </div>
         </div>
 
-        <!-- Сторінка книги -->
         <div id="bookPage" class="page">
             <div class="container">
                 <button class="back-icon" onclick="app.showLibrary()">← Назад</button>
@@ -76,7 +73,6 @@
             </div>
         </div>
 
-        <!-- Сторінка налаштувань -->
         <div id="settingsPage" class="page">
             <div class="container">
                 <div class="header-with-search">
@@ -96,7 +92,7 @@
                 <div class="settings-item">
                     <label>🌐 Мова</label>
                     <div class="lang-switch">
-                        <button class="lang-option" data-lang="uk" onclick="app.setLanguage('uk')">🇺🇴 Українська</button>
+                        <button class="lang-option" data-lang="uk" onclick="app.setLanguage('uk')">🇺🇦 Українська</button>
                         <button class="lang-option" data-lang="en" onclick="app.setLanguage('en')">🇬🇧 English</button>
                     </div>
                 </div>
@@ -110,7 +106,6 @@
             </div>
         </div>
 
-        <!-- Діалог додавання/редагування -->
         <div id="bookDialog" class="dialog" style="display:none" onclick="if(event.target===this) app.closeDialog()">
             <div class="dialog-content">
                 <h3 id="dialogTitle">Додати книгу</h3>
@@ -129,7 +124,6 @@
             </div>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
