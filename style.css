@@ -121,6 +121,27 @@ h2 {
     border: 1px solid var(--border-color);
 }
 
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 0 5px;
+}
+
+.sort-container label {
+    font-size: 14px;
+}
+
+.sort-container select {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
 .stats-bar {
     display: flex;
     justify-content: space-around;
@@ -155,9 +176,16 @@ h2 {
 }
 
 .book-cover-mini {
-    font-size: 48px;
     min-width: 60px;
     text-align: center;
+    font-size: 48px;
+}
+
+.book-cover-mini img {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 .book-info {
@@ -209,6 +237,13 @@ h2 {
     font-size: 120px;
     text-align: center;
     margin: 20px 0;
+}
+
+.book-detail-cover img {
+    max-width: 180px;
+    max-height: 240px;
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 .detail-author {
@@ -450,7 +485,6 @@ h2 {
 
 @media (max-width: 480px) {
     .book-cover-mini {
-        font-size: 36px;
         min-width: 50px;
     }
     
