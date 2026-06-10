@@ -8,9 +8,6 @@ const app = {
     
     translations: {
         uk: {
-            app_title: "BookShelf Pro",
-            my_library: "Моя бібліотека",
-            settings: "Налаштування",
             search: "🔍 Пошук книги...",
             no_books: "📭 Немає книг",
             add_first: "Натисніть + щоб додати",
@@ -18,41 +15,23 @@ const app = {
             edit_book: "Редагувати книгу",
             title: "Назва книги *",
             author: "Автор *",
-            review: "Рецензія (необов'язково)",
+            review: "Рецензія",
             rating: "⭐ Рейтинг:",
             cancel: "Скасувати",
             save: "Зберегти",
             read: "✅ Прочитано",
             unread: "📖 Не прочитано",
-            review_section: "📝 Рецензія",
             no_review: "Немає рецензії",
             edit: "✏️ Редагувати",
             change_cover: "🖼 Обкладинка",
-            theme_title: "🌙 Тема оформлення",
-            dark_theme: "🌙 Темна",
-            light_theme: "☀️ Світла",
-            language_title: "🌐 Мова",
-            ukrainian: "🇺🇦 Українська",
-            english: "🇬🇧 English",
-            data_title: "💾 Дані",
-            export: "📤 Експорт бібліотеки",
-            import: "📥 Імпорт бібліотеки",
-            clear: "🗑 Очистити всі дані",
             delete_confirm: "❓ Видалити цю книгу?",
-            clear_confirm: "⚠️ ВСІ ДАНІ БУДУТЬ ВИДАЛЕНІ! Ви впевнені?",
-            export_success: "✅ Бібліотеку експортовано!",
-            import_success: "✅ Бібліотеку імпортовано!",
-            import_error: "❌ Невірний формат файлу",
-            fill_fields: "Будь ласка, заповніть назву та автора!",
-            sort_by: "📊 Сортувати:",
+            clear_confirm: "⚠️ ВСІ ДАНІ БУДУТЬ ВИДАЛЕНІ!",
+            fill_fields: "Заповніть назву та автора",
             sort_rating: "За рейтингом",
             sort_title: "За назвою",
             sort_date: "За датою"
         },
         en: {
-            app_title: "BookShelf Pro",
-            my_library: "My Library",
-            settings: "Settings",
             search: "🔍 Search books...",
             no_books: "📭 No books",
             add_first: "Press + to add",
@@ -60,33 +39,18 @@ const app = {
             edit_book: "Edit book",
             title: "Title *",
             author: "Author *",
-            review: "Review (optional)",
+            review: "Review",
             rating: "⭐ Rating:",
             cancel: "Cancel",
             save: "Save",
             read: "✅ Read",
             unread: "📖 Unread",
-            review_section: "📝 Review",
             no_review: "No review",
             edit: "✏️ Edit",
             change_cover: "🖼 Change cover",
-            theme_title: "🌙 Theme",
-            dark_theme: "🌙 Dark",
-            light_theme: "☀️ Light",
-            language_title: "🌐 Language",
-            ukrainian: "🇺🇦 Ukrainian",
-            english: "🇬🇧 English",
-            data_title: "💾 Data",
-            export: "📤 Export library",
-            import: "📥 Import library",
-            clear: "🗑 Clear all data",
             delete_confirm: "❓ Delete this book?",
-            clear_confirm: "⚠️ ALL DATA WILL BE DELETED! Are you sure?",
-            export_success: "✅ Library exported!",
-            import_success: "✅ Library imported!",
-            import_error: "❌ Invalid file format",
-            fill_fields: "Please fill in title and author!",
-            sort_by: "📊 Sort by:",
+            clear_confirm: "⚠️ ALL DATA WILL BE DELETED!",
+            fill_fields: "Please fill title and author",
             sort_rating: "By rating",
             sort_title: "By title",
             sort_date: "By date"
@@ -100,9 +64,13 @@ const app = {
     init() {
         this.loadData();
         this.applyTheme();
-        this.updateAllTexts();
         this.renderLibrary();
         this.showHome();
+        
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.value = this.sortBy;
+        }
     },
     
     loadData() {
@@ -110,7 +78,7 @@ const app = {
         if (savedBooks) {
             this.books = JSON.parse(savedBooks);
         } else {
-            this.books = this.getDemoBooks();
+            this.books = [];
         }
         
         const savedTheme = localStorage.getItem('bookshelf_theme');
@@ -131,59 +99,10 @@ const app = {
         this.updateStats();
     },
     
-    getDemoBooks() {
-        return [
-            {
-                id: Date.now(),
-                title: "Майстер і Маргарита",
-                author: "Михайло Булгаков",
-                review: "Геніальний роман про кохання, владу та вічні цінності.",
-                cover: "",
-                read: false,
-                rating: 9,
-                created: Date.now()
-            },
-            {
-                id: Date.now() + 1,
-                title: "451 градус за Фаренгейтом",
-                author: "Рей Бредбері",
-                review: "Класична антиутопія про цінність книг та свободи думки.",
-                cover: "",
-                read: true,
-                rating: 8,
-                created: Date.now() + 1
-            }
-        ];
-    },
-    
-    updateAllTexts() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (this.translations[this.language][key]) {
-                if (el.tagName === 'INPUT' && el.placeholder) {
-                    el.placeholder = this.t(key);
-                } else if (el.tagName === 'BUTTON' && el.innerText) {
-                    el.innerText = this.t(key);
-                } else {
-                    el.innerText = this.t(key);
-                }
-            }
-        });
-        
-        document.title = this.t('app_title');
-        this.updateStats();
-        
-        const sortSelect = document.getElementById('sortSelect');
-        if (sortSelect) {
-            sortSelect.value = this.sortBy;
-        }
-    },
-    
     updateStats() {
         const total = this.books.length;
         const read = this.books.filter(b => b.read).length;
-        const avgRating = total > 0 ? 
-            (this.books.reduce((sum, b) => sum + (b.rating || 0), 0) / total).toFixed(1) : 0;
+        const avgRating = total > 0 ? (this.books.reduce((sum, b) => sum + (b.rating || 0), 0) / total).toFixed(1) : 0;
         
         const totalEl = document.getElementById('totalBooks');
         const readEl = document.getElementById('readBooks');
@@ -209,18 +128,9 @@ const app = {
     showSettings() {
         this.hideAllPages();
         document.getElementById('settingsPage').classList.add('active');
-        this.updateAllTexts();
         
         document.querySelectorAll('.theme-option').forEach(btn => {
             if (btn.dataset.theme === this.theme) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        
-        document.querySelectorAll('.lang-option').forEach(btn => {
-            if (btn.dataset.lang === this.language) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
@@ -242,7 +152,7 @@ const app = {
     
     getCoverImage(book) {
         if (book.cover && book.cover.startsWith('data:')) {
-            return `<img src="${book.cover}" alt="Обкладинка">`;
+            return `<img src="${book.cover}" style="width:50px;height:70px;object-fit:cover;border-radius:8px;">`;
         }
         return '📕';
     },
@@ -298,17 +208,11 @@ const app = {
         document.getElementById('bookDetailAuthor').textContent = this.currentBook.author;
         document.getElementById('bookDetailReview').textContent = this.currentBook.review || this.t('no_review');
         
-        const readBtn = document.getElementById('markReadBtn');
-        const unreadBtn = document.getElementById('markUnreadBtn');
-        
-        if (readBtn) readBtn.textContent = this.t('read');
-        if (unreadBtn) unreadBtn.textContent = this.t('unread');
-        
         this.renderStars(this.currentBook.rating || 0);
         
         const coverDiv = document.getElementById('bookDetailCover');
         if (this.currentBook.cover && this.currentBook.cover.startsWith('data:')) {
-            coverDiv.innerHTML = `<img src="${this.currentBook.cover}" alt="Обкладинка">`;
+            coverDiv.innerHTML = `<img src="${this.currentBook.cover}" style="max-width:180px;max-height:240px;border-radius:10px;object-fit:cover;">`;
         } else {
             coverDiv.innerHTML = '📕';
         }
@@ -485,7 +389,13 @@ const app = {
     
     setTheme(theme) {
         this.theme = theme;
-        this.applyTheme();
+        if (this.theme === 'light') {
+            document.body.classList.add('light');
+            document.body.classList.remove('dark');
+        } else {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        }
         this.saveData();
         this.showSettings();
     },
@@ -503,9 +413,13 @@ const app = {
     setLanguage(lang) {
         this.language = lang;
         this.saveData();
-        this.updateAllTexts();
         this.renderLibrary();
         this.showSettings();
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.placeholder = this.t('search');
+        }
         
         if (this.currentBook) {
             this.openBook(this.currentBook.id);
@@ -521,7 +435,7 @@ const app = {
         a.download = `bookshelf_backup_${new Date().toISOString().slice(0,10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        alert(this.t('export_success'));
+        alert('✅ Експорт виконано');
     },
     
     importData() {
@@ -538,12 +452,12 @@ const app = {
                         this.books = imported;
                         this.saveData();
                         this.renderLibrary();
-                        alert(this.t('import_success'));
+                        alert('✅ Імпорт виконано');
                     } else {
-                        alert(this.t('import_error'));
+                        alert('❌ Невірний формат');
                     }
                 } catch(e) {
-                    alert(this.t('import_error'));
+                    alert('❌ Помилка читання');
                 }
             };
             reader.readAsText(file);
@@ -557,7 +471,6 @@ const app = {
             this.saveData();
             this.renderLibrary();
             this.showLibrary();
-            alert('🗑 Всі дані очищено');
         }
     },
     
