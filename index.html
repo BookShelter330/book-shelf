@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>BookShelf Pro</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BookShelf">
     <meta name="theme-color" content="#1a1a1a">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -42,7 +40,7 @@
                     </select>
                 </div>
                 
-                <div class="stats-bar" id="statsBar">
+                <div class="stats-bar">
                     <span>📚 <span id="totalBooks">0</span></span>
                     <span>✅ <span id="readBooks">0</span></span>
                     <span>⭐ <span id="avgRating">0</span></span>
@@ -66,8 +64,8 @@
                 </div>
                 
                 <div class="status-buttons">
-                    <button id="markReadBtn" class="status-btn read-btn" onclick="app.markRead()">✅ Прочитано</button>
-                    <button id="markUnreadBtn" class="status-btn unread-btn" onclick="app.markUnread()">📖 Не прочитано</button>
+                    <button class="status-btn read-btn" onclick="app.markRead()">✅ Прочитано</button>
+                    <button class="status-btn unread-btn" onclick="app.markUnread()">📖 Не прочитано</button>
                 </div>
                 
                 <div class="review-section">
@@ -108,8 +106,8 @@
                 
                 <div class="settings-item">
                     <label>💾 Дані</label>
-                    <button class="danger-btn" onclick="app.exportData()">📤 Експорт бібліотеки</button>
-                    <button class="danger-btn" onclick="app.importData()">📥 Імпорт бібліотеки</button>
+                    <button class="danger-btn" onclick="app.exportData()">📤 Експорт</button>
+                    <button class="danger-btn" onclick="app.importData()">📥 Імпорт</button>
                     <button class="danger-btn danger" onclick="app.clearAllData()">🗑 Очистити всі дані</button>
                 </div>
             </div>
@@ -120,7 +118,7 @@
                 <h3 id="dialogTitle">Додати книгу</h3>
                 <input type="text" id="dialogTitleInput" placeholder="Назва книги *">
                 <input type="text" id="dialogAuthorInput" placeholder="Автор *">
-                <textarea id="dialogReviewInput" placeholder="Рецензія (необов'язково)"></textarea>
+                <textarea id="dialogReviewInput" placeholder="Рецензія"></textarea>
                 <div class="rating-input">
                     <label>⭐ Рейтинг:</label>
                     <div class="dialog-stars" id="dialogStars"></div>
